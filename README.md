@@ -1,5 +1,19 @@
 # 플러터 개발을 위한 기본 아키텍쳐 세팅입니다.
 
+### 디렉터리 구조
+
+```bash
+├── lib
+│   ├── object - DTO혹은 VO와 같은 데이터 타입을 정의해 놓습니다.
+│   ├── screens - 표현하고자 하는 화면을 정의해 놓습니다.
+│   ├── stores - 스토어 영역의 파일을 정의 합니다.
+│   ├── units - 작은 단위의 공통 컴포넌트를 정의합니다.
+│   └── utils - Dio 혹은 env, key와 같은 공통해서 사용하는 값들을 정의합니다.
+├─── main.dart - main dart 파일
+└─── stores.dart - store combine 정의
+```
+
+
 ### DIO를 통한 API CALL
 
 * 주요 파일 위치
@@ -53,10 +67,12 @@ static Future<Options> _abstractHeader(Map<String, String>? headers) async {
     // 보낸 결과는 Future타입으로 받아 .then 혹은 async await 를 사용하여 비동기로 받아오는 데이터를 처리한다.
 ```
 
+
+
 ### Provider를 통한 Store 세팅
 
 * 주요 파일 위치
-    * lib/stores/   // 스토어로 정의하여 사용할 파일들 위치
+    * lib/stores/*   // 스토어로 정의하여 사용할 파일들 위치
     * lib/stores.dart   // lib/stores/ 하위에 정의된 스토어 파일들을 하나로 묶어서 combine 함
     * lib/main.dart // lib/stores.dart 에 정의한 combine을 main.dart에 위젯으로 정의한다.
 
@@ -96,5 +112,38 @@ Consumer<SessionStore>(
         );
     }
 )
+```
+
+
+
+### API Response Serialize
+
+* 주요 파일 위치
+    * lib/objects/*
+
+* factory를 통한 데이터 직렬화
+```
+
+class SessionUser {
+  SessionUser({
+    required this.sessionKey,
+    required this.sessionEmail,
+    required this.sessionUserId,
+    required this.images
+  });
+
+  String sessionUserId;
+  String sessionEmail;
+  String sessionKey;
+  List<ImageDto> images;
+
+  factory SessionUser.fromJson(Map<String, dynamic> json) => SessionUser(
+    sessionUserId: json['user_id'],
+    sessionEmail: json['email'],
+    sessionKey: json['session_key'],
+    images: json['images'].map((item) => ImageDto.fromJson(item)).toList().cast<ImageDto>() // List Object 직렬화 방법의 예제입니다. 해당 부분은 졍확한 자료이니 참고 바랍니다.
+  );
+
+}
 ```
 
